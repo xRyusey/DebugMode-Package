@@ -1,0 +1,19 @@
+{
+  "name": "com.unity.debug_mode",
+  "version": "1.0.0",
+  "displayName": "Debug Mode",
+  "description": "This package include a Debug Mode with a customizable information panel and command console.",
+  "unity": "2020.3",
+  "keywords": [
+    "debug",
+    "console",
+    "information"
+  ],
+  "author": {
+    "name": "Unity",
+    "email": "unity@example.com",
+    "url": "https://www.unity3d.com"
+  },
+  "type": "tool",
+  "unityRelease": "0b5"
+}

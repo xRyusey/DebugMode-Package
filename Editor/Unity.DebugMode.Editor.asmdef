@@ -1,0 +1,18 @@
+{
+    "name": "Unity.DebugMode.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:a5ca61c271ac17d4c9df4bebf6918add"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
