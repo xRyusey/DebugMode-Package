@@ -7,15 +7,12 @@ public class DebugConsole : MonoBehaviour
 {
     public static DebugConsole Instance;
 
-    [SerializeField]
-    private DebugPanel panel;
-
     public KeyCode key;
     public int fontSize = 20;
 
     private bool showConsole;
-    private bool showHelp;
-    private bool showInfo;
+    private bool showHelp = false;
+    private bool showInfo = false;
 
     private string input;
 
@@ -41,6 +38,8 @@ public class DebugConsole : MonoBehaviour
     private void OnToggleDebug()
     {
         showConsole = !showConsole;
+        showHelp = false;
+        showInfo = false;
     }
 
     private void OnReturn()
@@ -126,13 +125,15 @@ public class DebugConsole : MonoBehaviour
 
     private void ScrollBox(float y, bool help, GUIStyle style)
     {
-        Rect viweport = new Rect(0, 0, Screen.width - (fontSize + 10), (fontSize + 10) * (help ? commandList.Count : panel.infoList.Count));
+        if (!help && DebugPanel.Instance == null) return;
+
+        Rect viweport = new Rect(0, 0, Screen.width - (fontSize + 10), (fontSize + 10) * (help ? commandList.Count : DebugPanel.Instance.infoList.Count));
 
         scroll = GUI.BeginScrollView(new Rect(0, y, Screen.width, Screen.height / 6), scroll, viweport);
 
-        for (int i = 0; i < ((help) ? commandList.Count : panel.infoList.Count); i++)
+        for (int i = 0; i < ((help) ? commandList.Count : DebugPanel.Instance.infoList.Count); i++)
         {
-            string label = help ? $"{commandList[i].GetCommandFormat()} - {commandList[i].GetCommandDescription()}" : $"{panel.infoList[i].GetInfoId()} : {panel.infoList[i].GetInfoDescription()}";
+            string label = help ? $"{commandList[i].GetCommandFormat()} - {commandList[i].GetCommandDescription()}" : $"{DebugPanel.Instance.infoList[i].GetInfoId()} : {DebugPanel.Instance.infoList[i].GetInfoDescription()}";
 
             Rect labelRect = new Rect(10, 5 + (fontSize + 10) * i, viweport.width - Screen.height / 6, fontSize + 10);
             GUI.Label(labelRect, label, style);
@@ -143,7 +144,7 @@ public class DebugConsole : MonoBehaviour
     {
         DebugCommand HELP = new DebugCommand("help", "Shows a list of all available commands.", "help", () =>
         {
-            showHelp = true;
+            showHelp = !showHelp;
             showInfo = false;
             scroll = Vector2.zero;
         });
@@ -151,7 +152,7 @@ public class DebugConsole : MonoBehaviour
         DebugCommand INFO = new DebugCommand("info", "Shows the description of all the information on the panel.", "info", () =>
         {
             showHelp = false;
-            showInfo = true;
+            showInfo = !showInfo;
             scroll = Vector2.zero;
         });
 
@@ -238,6 +239,7 @@ public class DebugConsole : MonoBehaviour
         string oldString = input;
         if (oldString != null) length = oldString.Length;
         input = GUI.TextField(new Rect(10, y + 5, Screen.width - (fontSize + 10), fontSize + 10), input, style);
+        TextEditor text = (TextEditor)GUIUtility.GetStateObject(typeof(TextEditor), GUIUtility.keyboardControl);
         y += fontSize + 10;
 
         if (!string.IsNullOrEmpty(input))
@@ -262,8 +264,11 @@ public class DebugConsole : MonoBehaviour
                 GUI.Box(new Rect(0, y + (fontSize + 10) * commandSelected, Screen.width, fontSize + 10), "");
 
                 if (e.keyCode == KeyCode.Tab)
+                {
                     input = commandFoundList[commandSelected];
-
+                    text.cursorIndex = input.Length;
+                    text.selectIndex = input.Length;
+                }
                 if (e.type == EventType.Used && e.keyCode == KeyCode.DownArrow)
                     commandSelected = (commandSelected + 1) < commandFoundList.Count ? commandSelected + 1 : commandFoundList.Count - 1;
                 else if (e.type == EventType.Used && e.keyCode == KeyCode.UpArrow)

@@ -7,10 +7,10 @@ public class DebugPanel : MonoBehaviour
 {
     public static DebugPanel Instance;
 
-    [SerializeField]
-    private DebugConsole console;
-
+    public KeyCode key;
     public int fontSize = 20;
+
+    private bool showPanel;
 
     private Vector2 scroll;
 
@@ -32,6 +32,11 @@ public class DebugPanel : MonoBehaviour
     public int GetCurrentScene()
     {
         return SceneManager.GetActiveScene().buildIndex;
+    }
+
+    private void OnToggleDebug()
+    {
+        showPanel = !showPanel;
     }
 
     private void Init()
@@ -80,13 +85,19 @@ public class DebugPanel : MonoBehaviour
 
     private void Update()
     {
-        deltaTime += (Time.deltaTime - deltaTime) * 0.1f;
-        fps = 1.0f / deltaTime;
+        if (Input.GetKeyDown(key))
+            OnToggleDebug();
+
+        if (showPanel)
+        {
+            deltaTime += (Time.deltaTime - deltaTime) * 0.1f;
+            fps = 1.0f / deltaTime;
+        }
     }
 
     private void OnGUI()
     {
-        if (!console || !console.IsConsoleShowing()) return;
+        if (!showPanel) return;
 
         GUIStyle style = new GUIStyle();
         style.normal.textColor = new Color(1, 1, 1);
